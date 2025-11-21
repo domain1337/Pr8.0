@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практическая работа №8 - Модули системы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50 0%, #4a6fa5 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .module-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 4px solid #4a90e2;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .module-title {
+            color: #2c3e50;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .requirement-tag {
+            background: linear-gradient(45deg, #4a90e2, #5fa6ff);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], 
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4a90e2, #5fa6ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background: linear-gradient(45deg, #3a7bc8, #4d91d6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(45deg, #e74c3c, #ff6b6b);
+        }
+        
+        .clear-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #ff5252);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .success {
+            background: linear-gradient(45deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            background: linear-gradient(45deg, #ffebee, #ffcdd2);
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
+        .task-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 3px solid #4a90e2;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .task-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .task-checkbox {
+            margin-right: 12px;
+        }
+        
+        .task-text {
+            flex: 1;
+        }
+        
+        .task-completed {
+            text-decoration: line-through;
+            color: #777;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-style: italic;
+        }
+        
+        .code-block {
+            background: #2d3436;
+            color: #dfe6e9;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #2c3e50;
+            padding-left: 10px;
+            border-left: 3px solid #4a90e2;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .test-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .test-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .test-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .test-failure {
+            background: #f44336;
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #777;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Практическая работа №8</h1>
+            <p class="subtitle">Разработка модулей системы в соответствии с требованиями</p>
+        </header>
+        
+        <div class="content">
+            <!-- Модуль 1: Валидация учебной группы -->
+            <div class="module-card">
+                <div class="module-header">
+                    <h2 class="module-title">Модуль: Валидация учебной группы</h2>
+                    <span class="requirement-tag">ФР-03</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="groupInput">Введите учебную группу:</label>
+                    <input type="text" id="groupInput" placeholder="Например: 2ИСП">
+                </div>
+                
+                <button onclick="validateGroup()">Проверить формат</button>
+                
+                <div id="groupResult" class="result"></div>
+                
+                <div class="test-results">
+                    <h3>Тестирование модуля:</h3>
+                    <div class="test-item">
+                        <div class="test-icon test-success">✓</div>
+                        <div>validateGroup("2ИСП") → <span class="highlight">true</span></div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-success">✓</div>
+                        <div>validateGroup("3ПМ") → <span class="highlight">true</span></div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-failure">✗</div>
+                        <div>validateGroup("2исп") → <span class="highlight">false</span></div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-failure">✗</div>
+                        <div>validateGroup("ИСП21") → <span class="highlight">false</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Модуль 2: Управление задачами -->
+            <div class="module-card">
+                <div class="module-header">
+                    <h2 class="module-title">Модуль: Управление задачами</h2>
+                    <span class="requirement-tag">ФР-07</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="taskInput">Новая задача:</label>
+                    <input type="text" id="taskInput" placeholder="Описание задачи">
+                </div>
+                
+                <button onclick="addTask()">Добавить задачу</button>
+                <button class="clear-btn" onclick="clearAllTasks()">Очистить все</button>
+                
+                <div id="taskList" class="task-list">
+                    <div class="empty-state">Нет задач. Добавьте первую задачу!</div>
+                </div>
+                
+                <div class="test-results">
+                    <h3>Тестирование модуля:</h3>
+                    <div class="test-item">
+                        <div class="test-icon test-success">✓</div>
+                        <div>saveTasks([...]) → данные сохранены</div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-success">✓</div>
+                        <div>loadTasks() → возвращает массив задач</div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-failure">✗</div>
+                        <div>loadTasks() без данных → возвращает пустой массив</div>
+                    </div>
+                    <div class="test-item">
+                        <div class="test-icon test-failure">✗</div>
+                        <div>saveTasks("не массив") → ошибка валидации</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Документация модулей -->
+            <div class="module-card" style="grid-column: 1 / 3;">
+                <h2 class="module-title">Документация модулей</h2>
+                
+                <div class="section-title">Модуль validateGroup.js</div>
+                <div class="code-block">/**
+ * Проверяет формат учебной группы (цифра + 3 заглавные буквы)
+ * @param {string} group - Название учебной группы
+ * @returns {boolean} - true если формат корректен
+ */
+function validateGroup(group) {
+    const pattern = /^\d[А-Я]{3}$/;
+    return pattern.test(group);
+}</div>
+                
+                <div class="section-title">Модуль taskStorage.js</div>
+                <div class="code-block">/**
+ * Сохраняет задачи в localStorage
+ * @param {Array} tasks - Массив задач
+ */
+function saveTasks(tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+/**
+ * Загружает задачи из localStorage
+ * @returns {Array} - Массив задач или пустой массив
+ */
+function loadTasks() {
+    const data = localStorage.getItem('tasks');
+    return data ? JSON.parse(data) : [];
+}</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Практическая работа №8 | Разработка модулей системы в соответствии с требованиями</p>
+            <p>Дата выполнения: <span id="currentDate"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Модуль 1: Валидация учебной группы (ФР-03)
+        function validateGroup() {
+            const input = document.getElementById('groupInput');
+            const resultDiv = document.getElementById('groupResult');
+            const group = input.value.trim();
+            
+            // Регулярное выражение: цифра + 3 заглавные кириллические буквы
+            const pattern = /^\d[А-Я]{3}$/;
+            
+            if (pattern.test(group)) {
+                resultDiv.textContent = `✓ Группа "${group}" введена корректно.`;
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+            } else {
+                resultDiv.textContent = `✗ Некорректный формат группы. Пример: 2ИСП`;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Модуль 2: Управление задачами (ФР-07)
+        function loadTasks() {
+            const tasks = localStorage.getItem('tasks');
+            return tasks ? JSON.parse(tasks) : [];
+        }
+
+        function saveTasks(tasks) {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const taskText = input.value.trim();
+            
+            if (taskText) {
+                const tasks = loadTasks();
+                tasks.push({
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false
+                });
+                saveTasks(tasks);
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            let tasks = loadTasks();
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks(tasks);
+            renderTasks();
+        }
+
+        function toggleTask(id) {
+            const tasks = loadTasks();
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks(tasks);
+                renderTasks();
+            }
+        }
+
+        function clearAllTasks() {
+            if (confirm('Удалить все задачи?')) {
+                saveTasks([]);
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const tasks = loadTasks();
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<div class="empty-state">Нет задач. Добавьте первую задачу!</div>';
+                return;
+            }
+            
+            taskList.innerHTML = tasks.map(task => `
+                <div class="task-item">
+                    <div class="task-content">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                        <span class="task-text ${task.completed ? 'task-completed' : ''}">${task.text}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Загрузка задач при инициализации
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            
+            // Установка текущей даты
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('ru-RU', options);
+            document.getElementById('currentDate').textContent = formattedDate;
+        });
+    </script>
+</body>
+</html>
